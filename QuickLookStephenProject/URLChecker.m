@@ -9,9 +9,20 @@
 #import "URLChecker.h"
 #import <Foundation/Foundation.h>
 
+#define MAX_PREVIEW_SIZE 400000 
+
 bool shouldProcessItem(CFURLRef itemURL, CFBundleRef bundle)
 {
 	NSURL *url = (NSURL *)itemURL;
+
+	// make sure the file is not too big first..;
+    NSFileManager *man = [[NSFileManager alloc] init];
+    NSDictionary *attrs = [man attributesOfItemAtPath: [(NSURL*)url path] error: NULL];
+    
+    if ([attrs fileSize] > MAX_PREVIEW_SIZE)
+    {
+        return false;
+    }
 
 	// Allow these files always, no matter what
 	NSURL *whiteListURL = (NSURL *)CFBundleCopyResourceURL(bundle, CFSTR("QLStephenWhiteList"), CFSTR("plist"), NULL);
